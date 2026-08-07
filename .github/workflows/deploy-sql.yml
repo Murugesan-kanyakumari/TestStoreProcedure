@@ -19,12 +19,12 @@ jobs:
         shell: cmd
         run: |
           for %%f in (database\Tables\*.sql) do (
-            sqlcmd -S localhost\SQLEXPRESS -d Test_Store_Procedure -i "%%f" -E
+            sqlcmd -S localhost\SQLEXPRESS -d Test_Store_Procedure -i "%%f" -E -C
           )
 
       - name: Deploy Stored Procedure scripts
         shell: cmd
         run: |
           for %%f in (database\StoredProcedures\*.sql) do (
-            sqlcmd -S localhost\SQLEXPRESS -d Test_Store_Procedure -i "%%f" -E
+            sqlcmd -S localhost\SQLEXPRESS -d Test_Store_Procedure -i "%%f" -E -C
           )

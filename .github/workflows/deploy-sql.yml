@@ -1,0 +1,30 @@
+name: Deploy SQL Changes
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'database/**'
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Deploy Table scripts
+        shell: cmd
+        run: |
+          for %%f in (database\Tables\*.sql) do (
+            sqlcmd -S localhost\SQLEXPRESS -d Test_Store_Procedure -i "%%f" -E
+          )
+
+      - name: Deploy Stored Procedure scripts
+        shell: cmd
+        run: |
+          for %%f in (database\StoredProcedures\*.sql) do (
+            sqlcmd -S localhost\SQLEXPRESS -d Test_Store_Procedure -i "%%f" -E
+          )

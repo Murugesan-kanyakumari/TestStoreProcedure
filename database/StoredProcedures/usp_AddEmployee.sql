@@ -11,6 +11,7 @@ BEGIN
     print 'Employee added successfully.';
     print 'Only this SP should redeploy now';
     print 'heloooo';
+    print 'Haiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii';
 
     SELECT SCOPE_IDENTITY() AS NewEmployeeID;
 END

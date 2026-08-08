@@ -7,7 +7,8 @@ BEGIN
     SET NOCOUNT ON;
 
     INSERT INTO dbo.Employees (FirstName, LastName, Department)
-    VALUES (@FirstName + '!!!', @LastName, @Department);
+    VALUES (@FirstName + '!!!', @LastName + 'Hai', @Department);
+    print 'Employee added successfully.';
 
     SELECT SCOPE_IDENTITY() AS NewEmployeeID;
 END

@@ -18,30 +18,40 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Detect changed Table files
-        id: changed-tables
-        uses: tj-actions/changed-files@v44
-        with:
-          files: database/Tables/**/*.sql
+      - name: Get list of changed SQL files
+        id: changed
+        shell: bash
+        run: |
+          BEFORE_SHA="${{ github.event.before }}"
+          if [ -z "$BEFORE_SHA" ] || [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            BEFORE_SHA=$(git rev-parse HEAD^)
+          fi
+
+          echo "Comparing $BEFORE_SHA to ${{ github.sha }}"
+          git diff --name-only "$BEFORE_SHA" "${{ github.sha }}" > all_changed.txt
+
+          echo "----- Files changed in this push -----"
+          cat all_changed.txt
+          echo "---------------------------------------"
+
+          TABLES=$(grep '^database/Tables/.*\.sql$' all_changed.txt | tr '\n' ' ')
+          SPS=$(grep '^database/StoredProcedures/.*\.sql$' all_changed.txt | tr '\n' ' ')
+
+          echo "tables=$TABLES" >> "$GITHUB_OUTPUT"
+          echo "sps=$SPS" >> "$GITHUB_OUTPUT"
 
       - name: Deploy changed Table scripts
-        if: steps.changed-tables.outputs.any_changed == 'true'
+        if: steps.changed.outputs.tables != ''
         shell: cmd
         run: |
-          for %%f in (${{ steps.changed-tables.outputs.all_changed_files }}) do (
+          for %%f in (${{ steps.changed.outputs.tables }}) do (
             sqlcmd -S localhost\SQLEXPRESS -d Test_Store_Procedure -i "%%f" -E -C
           )
 
-      - name: Detect changed Stored Procedure files
-        id: changed-sps
-        uses: tj-actions/changed-files@v44
-        with:
-          files: database/StoredProcedures/**/*.sql
-
       - name: Deploy changed Stored Procedure scripts
-        if: steps.changed-sps.outputs.any_changed == 'true'
+        if: steps.changed.outputs.sps != ''
         shell: cmd
         run: |
-          for %%f in (${{ steps.changed-sps.outputs.all_changed_files }}) do (
+          for %%f in (${{ steps.changed.outputs.sps }}) do (
             sqlcmd -S localhost\SQLEXPRESS -d Test_Store_Procedure -i "%%f" -E -C
           )

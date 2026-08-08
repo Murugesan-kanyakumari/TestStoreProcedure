@@ -20,25 +20,25 @@ jobs:
 
       - name: Get list of changed SQL files
         id: changed
-        shell: bash
+        shell: powershell
         run: |
-          BEFORE_SHA="${{ github.event.before }}"
-          if [ -z "$BEFORE_SHA" ] || [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
-            BEFORE_SHA=$(git rev-parse HEAD^)
-          fi
+          $BEFORE_SHA = "${{ github.event.before }}"
+          if ([string]::IsNullOrEmpty($BEFORE_SHA) -or $BEFORE_SHA -eq "0000000000000000000000000000000000000000") {
+            $BEFORE_SHA = git rev-parse HEAD^
+          }
 
-          echo "Comparing $BEFORE_SHA to ${{ github.sha }}"
-          git diff --name-only "$BEFORE_SHA" "${{ github.sha }}" > all_changed.txt
+          Write-Host "Comparing $BEFORE_SHA to ${{ github.sha }}"
+          $changed = git diff --name-only $BEFORE_SHA ${{ github.sha }}
 
-          echo "----- Files changed in this push -----"
-          cat all_changed.txt
-          echo "---------------------------------------"
+          Write-Host "----- Files changed in this push -----"
+          $changed | ForEach-Object { Write-Host $_ }
+          Write-Host "---------------------------------------"
 
-          TABLES=$(grep '^database/Tables/.*\.sql$' all_changed.txt | tr '\n' ' ')
-          SPS=$(grep '^database/StoredProcedures/.*\.sql$' all_changed.txt | tr '\n' ' ')
+          $tables = ($changed | Where-Object { $_ -match '^database/Tables/.*\.sql$' }) -join ' '
+          $sps = ($changed | Where-Object { $_ -match '^database/StoredProcedures/.*\.sql$' }) -join ' '
 
-          echo "tables=$TABLES" >> "$GITHUB_OUTPUT"
-          echo "sps=$SPS" >> "$GITHUB_OUTPUT"
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "tables=$tables"
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "sps=$sps"
 
       - name: Deploy changed Table scripts
         if: steps.changed.outputs.tables != ''

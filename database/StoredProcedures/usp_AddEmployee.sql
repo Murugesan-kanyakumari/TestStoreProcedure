@@ -9,6 +9,7 @@ BEGIN
     INSERT INTO dbo.Employees (FirstName, LastName, Department)
     VALUES (@FirstName + '!!!', @LastName + 'Hai', @Department);
     print 'Employee added successfully.';
+    print 'Tested';
 
     SELECT SCOPE_IDENTITY() AS NewEmployeeID;
 END

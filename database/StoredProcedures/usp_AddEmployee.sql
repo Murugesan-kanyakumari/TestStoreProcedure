@@ -9,14 +9,6 @@ BEGIN
     INSERT INTO dbo.Employees (FirstName, LastName, Department)
     VALUES (@FirstName + '!!!', @LastName + 'Hello', @Department);
     print 'Employee added successfully.';
-    print 'Only this SP should redeploy now';
-    print 'heloooo';
-    print 'FINAL TEST - only this file changed>>>>>>>>>>>>>>>>>>>>>>>>>>>>';
-    print 'FINAL TEST - only this file changed>>>>>>>>>>>>>>>>>>>>>>>>>>>>';
-    print 'FINAL TEST - only this file changed>>>>>>>>>>>>>>>>>>>>>>>>>>>>';
-    print 'FINAL TEST - only this file changed>>>>>>>>>>>>>>>>>>>>>>>>>>>>';
-    print 'FINAL TEST - only this file changed>>>>>>>>>>>>>>>>>>>>>>>>>>>>';
-    print 'FINAL TEST - only this file changed>>>>>>>>>>>>>>>>>>>>>>>>>>>>';
 
     SELECT SCOPE_IDENTITY() AS NewEmployeeID;
 END

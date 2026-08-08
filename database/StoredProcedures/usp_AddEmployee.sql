@@ -10,6 +10,7 @@ BEGIN
     VALUES (@FirstName + '!!!', @LastName + 'Hello', @Department);
     print 'Employee added successfully.';
     print 'Only this SP should redeploy now';
+    print 'heloooo';
 
     SELECT SCOPE_IDENTITY() AS NewEmployeeID;
 END
